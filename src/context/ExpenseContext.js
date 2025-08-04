@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 const ExpenseContext = createContext();
@@ -88,8 +88,9 @@ function expenseReducer(state, action) {
 }
 
 // Provider component
-export function ExpenseProvider({ children }) {
+export function ExpenseProvider({ children, onSuccess, onError }) {
   const [state, dispatch] = useReducer(expenseReducer, initialState);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -102,40 +103,80 @@ export function ExpenseProvider({ children }) {
         console.error('Error loading saved data:', error);
       }
     }
+    setIsLoaded(true);
   }, []);
 
-  // Save data to localStorage whenever state changes
+  // Save data to localStorage whenever state changes (but only after initial load)
   useEffect(() => {
-    localStorage.setItem('expenseTracker', JSON.stringify(state));
-  }, [state]);
+    if (!isLoaded) return; // Don't save until we've loaded from localStorage
+    
+    try {
+      localStorage.setItem('expenseTracker', JSON.stringify(state));
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+      if (onError) {
+        onError('Failed to save data locally. Changes may not persist.');
+      }
+    }
+  }, [state, onError, isLoaded]);
 
   // Action creators
   const addExpense = (expense) => {
-    dispatch({
-      type: ACTIONS.ADD_EXPENSE,
-      payload: {
-        ...expense,
-        date: new Date(expense.date).toISOString(),
-        amount: parseFloat(expense.amount),
-        createdAt: new Date().toISOString()
+    try {
+      dispatch({
+        type: ACTIONS.ADD_EXPENSE,
+        payload: {
+          ...expense,
+          date: new Date(expense.date).toISOString(),
+          amount: parseFloat(expense.amount),
+          createdAt: new Date().toISOString()
+        }
+      });
+      if (onSuccess) {
+        onSuccess('Expense added successfully! 💰');
       }
-    });
+    } catch (error) {
+      console.error('Error adding expense:', error);
+      if (onError) {
+        onError('Failed to add expense. Please try again.');
+      }
+    }
   };
 
   const updateExpense = (expense) => {
-    dispatch({
-      type: ACTIONS.UPDATE_EXPENSE,
-      payload: {
-        ...expense,
-        date: new Date(expense.date).toISOString(),
-        amount: parseFloat(expense.amount),
-        updatedAt: new Date().toISOString()
+    try {
+      dispatch({
+        type: ACTIONS.UPDATE_EXPENSE,
+        payload: {
+          ...expense,
+          date: new Date(expense.date).toISOString(),
+          amount: parseFloat(expense.amount),
+          updatedAt: new Date().toISOString()
+        }
+      });
+      if (onSuccess) {
+        onSuccess('Expense updated successfully! ✏️');
       }
-    });
+    } catch (error) {
+      console.error('Error updating expense:', error);
+      if (onError) {
+        onError('Failed to update expense. Please try again.');
+      }
+    }
   };
 
   const deleteExpense = (id) => {
-    dispatch({ type: ACTIONS.DELETE_EXPENSE, payload: id });
+    try {
+      dispatch({ type: ACTIONS.DELETE_EXPENSE, payload: id });
+      if (onSuccess) {
+        onSuccess('Expense deleted successfully! 🗑️');
+      }
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+      if (onError) {
+        onError('Failed to delete expense. Please try again.');
+      }
+    }
   };
 
   const setFilters = (filters) => {

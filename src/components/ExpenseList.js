@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useExpenses } from '../context/ExpenseContext';
+import { getCategoryIcon } from '../utils/categoryIcons';
 import { applyFilters, formatCurrency, formatDate } from '../utils/expenseUtils';
 import ExpenseForm from './ExpenseForm';
 
@@ -145,8 +146,7 @@ const ExpenseList = () => {
               <div className="expense-details">
                 <div className="expense-meta">
                   <span className="expense-category">
-                    <span className="category-dot"></span>
-                    {expense.category}
+                    {getCategoryIcon(expense.category)} {expense.category}
                   </span>
                   <span className="expense-date">
                     {formatDate(expense.date)}

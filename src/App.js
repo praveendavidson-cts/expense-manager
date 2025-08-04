@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { ExpenseProvider } from './context/ExpenseContext';
+import { ToastProvider, useToast } from './context/ToastContext';
 import Dashboard from './components/Dashboard';
 import ExpenseForm from './components/ExpenseForm';
 import ExpenseList from './components/ExpenseList';
 import FilterBar from './components/FilterBar';
+import ToastContainer from './components/Toast';
 import { useExpenses } from './context/ExpenseContext';
 import './App.css';
 
@@ -14,8 +16,8 @@ function AppContent() {
 
   const handleAddExpense = (expenseData) => {
     addExpense(expenseData);
-    // Optionally switch to expenses list after adding
-    // setActiveTab('expenses');
+    // Switch to expenses list after adding
+    setActiveTab('expenses');
   };
 
   const renderContent = () => {
@@ -73,15 +75,30 @@ function AppContent() {
       <footer className="app-footer">
         <p>&copy; 2024 Expense Tracker. Track your expenses with ease!</p>
       </footer>
+      
+      <ToastContainer />
     </div>
   );
 }
 
-// Main App component with provider
+// Main App component with providers
 function App() {
   return (
-    <ExpenseProvider>
-      <AppContent />
+    <ToastProvider>
+      <ExpenseProviderWithToast>
+        <AppContent />
+      </ExpenseProviderWithToast>
+    </ToastProvider>
+  );
+}
+
+// Wrapper to connect ExpenseProvider with Toast functionality
+function ExpenseProviderWithToast({ children }) {
+  const { success, error } = useToast();
+  
+  return (
+    <ExpenseProvider onSuccess={success} onError={error}>
+      {children}
     </ExpenseProvider>
   );
 }

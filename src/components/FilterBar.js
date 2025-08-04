@@ -1,5 +1,6 @@
 import React from 'react';
 import { useExpenses } from '../context/ExpenseContext';
+import { getCategoryIcon } from '../utils/categoryIcons';
 import { getDateRangeLabel } from '../utils/expenseUtils';
 
 const FilterBar = () => {
@@ -112,12 +113,12 @@ const FilterBar = () => {
           onChange={(e) => handleCategoryChange(e.target.value)}
           className="category-filter"
         >
-          <option value="">All Categories</option>
-          {categories.map(category => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
+                      <option value="">All Categories</option>
+            {categories.map(category => (
+              <option key={category} value={category}>
+                {getCategoryIcon(category)} {category}
+              </option>
+            ))}
         </select>
       </div>
 

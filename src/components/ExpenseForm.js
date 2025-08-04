@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useExpenses } from '../context/ExpenseContext';
+import { getCategoryIcon } from '../utils/categoryIcons';
 import { format } from 'date-fns';
 
 const ExpenseForm = ({ expense = null, onSubmit, onCancel }) => {
@@ -154,7 +155,7 @@ const ExpenseForm = ({ expense = null, onSubmit, onCancel }) => {
               <option value="">Select a category</option>
               {categories.map(category => (
                 <option key={category} value={category}>
-                  {category}
+                  {getCategoryIcon(category)} {category}
                 </option>
               ))}
             </select>

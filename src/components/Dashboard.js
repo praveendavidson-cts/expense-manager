@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useExpenses } from '../context/ExpenseContext';
+import { getCategoryIcon } from '../utils/categoryIcons';
 import {
   formatCurrency,
   calculateTotal,
@@ -66,7 +67,7 @@ const Dashboard = () => {
             {categoryTotals.slice(0, 5).map((cat, index) => (
               <div key={cat.category} className="category-item">
                 <span className="category-rank">#{index + 1}</span>
-                <span className="category-name">{cat.category}</span>
+                <span className="category-name">{getCategoryIcon(cat.category)} {cat.category}</span>
                 <span className="category-amount">{formatCurrency(cat.total)}</span>
                 <span className="category-count">({cat.count} expenses)</span>
               </div>
@@ -92,7 +93,7 @@ const Dashboard = () => {
             return (
               <div key={cat.category} className="category-breakdown-item">
                 <div className="category-info">
-                  <span className="category-name">{cat.category}</span>
+                  <span className="category-name">{getCategoryIcon(cat.category)} {cat.category}</span>
                   <span className="category-stats">
                     {formatCurrency(cat.total)} ({percentage}%)
                   </span>
